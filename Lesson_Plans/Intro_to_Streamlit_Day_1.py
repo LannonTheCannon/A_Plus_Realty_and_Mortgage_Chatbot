@@ -1,7 +1,7 @@
 import streamlit as st
 
 def main():
-    st.title("Introduction to Streamlit")
+    st.title("Introduction to Streamlit :100:")
     st.subheader("A lesson plan for 6th-9th grade Python coders")
 
     # Add a sidebar
