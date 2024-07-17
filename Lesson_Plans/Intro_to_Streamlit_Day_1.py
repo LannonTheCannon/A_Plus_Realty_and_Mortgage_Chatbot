@@ -7,7 +7,7 @@ def main():
     # Add a sidebar
     st.sidebar.title("Lesson Sections")
     sections = [
-        "1. Introduction",
+        ":blue[1. Introduction]",
         "2. Setup",
         "3. Basic Streamlit Elements",
         "4. Simple Interactive App",
