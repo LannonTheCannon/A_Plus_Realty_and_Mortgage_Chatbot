@@ -209,7 +209,7 @@ import random
 
 st.title("Guess the Number Game")
 
-# Generate a random number between 1 and 100
+ # Generate a random number between 1 and 100
 secret_number = random.randint(1, 100)
 
 # Get the player's guess
