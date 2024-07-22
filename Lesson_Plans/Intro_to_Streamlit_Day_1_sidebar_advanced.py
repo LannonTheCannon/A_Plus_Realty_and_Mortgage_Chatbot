@@ -52,7 +52,7 @@ def main():
         "🛠 Setup",
         "🧱 Basic Elements",
         "🔢 Interactive App",
-        "▶  Running the App",
+        "▶ Running the App",
         "🖐 Hands-on Activity",
         "🎓 Wrap-up",
         "🎨 CSS Wrapping"
@@ -67,9 +67,9 @@ def main():
         basic_elements()
     elif selected_section == "🔢 Interactive App":
         interactive_app()
-    elif selected_section == "▶️ Running the App":
+    elif selected_section == "▶ Running the App":
         running_app()
-    elif selected_section == "🖐️ Hands-on Activity":
+    elif selected_section == "🖐 Hands-on Activity":
         hands_on_activity()
     elif selected_section == "🎓 Wrap-up":
         wrap_up()
@@ -194,7 +194,7 @@ def running_app():
     
     with st.expander("Pro Tips"):
         st.markdown("""
-        - Use `streamlit run --server.port 8080 your_app.py` to specify a port
+        - First change the directory to the correct folder destination using `cd your_file_path`
         - Enable auto-reloading with `streamlit run --server.runOnSave true your_app.py`
         - For more options, try `streamlit run --help`
         """)
