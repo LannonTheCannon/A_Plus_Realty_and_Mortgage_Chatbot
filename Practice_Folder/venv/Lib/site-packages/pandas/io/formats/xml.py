@@ -545,7 +545,7 @@ class LxmlXMLFormatter(_BaseXMLFormatter):
         )
 
         with preprocess_data(handle_data) as xml_data:
-            curr_parser = XMLParser(encoding=self.encoding)
+            curr_parser = XMLParser(encoding=self.encoding, resolve_entities=False)
 
             if isinstance(xml_data, io.StringIO):
                 xsl_doc = fromstring(
