@@ -1,168 +1,138 @@
 import streamlit as st
 import random
 
-# Set page config
-st.set_page_config(page_title="Streamlit Quiz", page_icon="🧠", layout="wide")
-
-# Custom CSS
-st.markdown("""
-<style>
-    body {
-        color: #333;
-        background-color: #f0f8ff;
-    }
-    .stApp {
-        background-image: linear-gradient(to right top, #d16ba5, #c777b9, #ba83ca, #aa8fd8, #9a9ae1, #8aa7ec, #79b3f4, #69bff8, #52cffe, #41dfff, #46eefa, #5ffbf1);
-    }
-    .big-font {
-        font-size: 50px !important;
-        font-weight: bold;
-        color: #1e3799;
-        text-align: center;
-        text-shadow: 2px 2px 4px #ffffff;
-    }
-    .question-font {
-        font-size: 24px !important;
-        color: #192a56;
-        background-color: rgba(255, 255, 255, 0.7);
-        padding: 20px;
-        border-radius: 10px;
-        margin-bottom: 20px;
-    }
-    .stButton>button {
-        color: #ffffff;
-        background-color: #273c75;
-        border-radius: 20px;
-        font-size: 18px;
-        font-weight: bold;
-        border: 2px solid #ffffff;
-        padding: 10px 25px;
-    }
-    .stRadio>label {
-        color: #192a56;
-        font-size: 18px;
-    }
-</style>
-""", unsafe_allow_html=True)
-
-# Quiz questions
-questions = [
+# Quiz questions and answers
+quiz_data = [
     {
-        "question": "What command do you use to install Streamlit?",
-        "options": ["pip install streamlit", "conda install streamlit", "apt-get install streamlit", "npm install streamlit"],
-        "correct": "pip install streamlit"
+        "question": "What is the primary purpose of Streamlit's Session State?",
+        "answer": "To share variables between reruns of the app",
+        "options": [
+            "To share variables between reruns of the app",
+            "To store global variables",
+            "To cache function results",
+            "To save data to a database"
+        ]
     },
     {
-        "question": "Which Streamlit function is used to display a title?",
-        "options": ["st.header()", "st.title()", "st.subheader()", "st.text()"],
-        "correct": "st.title()"
+        "question": "How do you initialize a variable in Session State?",
+        "answer": "st.session_state.variable_name = value",
+        "options": [
+            "st.session_state.variable_name = value",
+            "st.session_state['variable_name'] = value",
+            "st.set_state(variable_name, value)",
+            "st.init_state(variable_name, value)"
+        ]
     },
     {
-        "question": "How do you run a Streamlit app?",
-        "options": ["python app.py", "streamlit run app.py", "flask run app.py", "django-admin runserver"],
-        "correct": "streamlit run app.py"
+        "question": "What happens if you try to access a key that doesn't exist in Session State?",
+        "answer": "It raises a KeyError",
+        "options": [
+            "It raises a KeyError",
+            "It returns None",
+            "It creates the key with a default value",
+            "It throws a StreamlitAPIException"
+        ]
     },
     {
-        "question": "Which function is used to create a button in Streamlit?",
-        "options": ["st.button()", "st.create_button()", "st.input_button()", "st.click()"],
-        "correct": "st.button()"
+        "question": "Can you store complex data structures like lists or dictionaries in Session State?",
+        "answer": "Yes",
+        "options": ["Yes", "No", "Only lists", "Only dictionaries"]
     },
     {
-        "question": "What does st.write() do?",
-        "options": ["Only writes text", "Writes text to a file", "Can display text, data, and other objects", "Creates a text input field"],
-        "correct": "Can display text, data, and other objects"
+        "question": "How do you check if a key exists in Session State?",
+        "answer": "if 'key_name' in st.session_state:",
+        "options": [
+            "if 'key_name' in st.session_state:",
+            "if st.session_state.has_key('key_name'):",
+            "if st.session_state.exists('key_name'):",
+            "if 'key_name' in st.state:"
+        ]
     },
     {
-        "question": "Which function creates a slider input?",
-        "options": ["st.slide()", "st.input_slider()", "st.slider()", "st.range()"],
-        "correct": "st.slider()"
+        "question": "What's the benefit of using Session State over global variables?",
+        "answer": "It's specific to each user session and doesn't affect other users",
+        "options": [
+            "It's specific to each user session and doesn't affect other users",
+            "It's faster than global variables",
+            "It allows for larger data storage",
+            "It automatically saves data to a database"
+        ]
     },
     {
-        "question": "How do you add an image to your Streamlit app?",
-        "options": ["st.picture()", "st.img()", "st.show_image()", "st.image()"],
-        "correct": "st.image()"
+        "question": "How can you delete a variable from Session State?",
+        "answer": "del st.session_state.variable_name",
+        "options": [
+            "del st.session_state.variable_name",
+            "st.session_state.remove(variable_name)",
+            "st.session_state.delete(variable_name)",
+            "st.remove_state(variable_name)"
+        ]
     },
     {
-        "question": "Which function is used to create a dropdown select box?",
-        "options": ["st.dropdown()", "st.select()", "st.choose()", "st.selectbox()"],
-        "correct": "st.selectbox()"
+        "question": "Does Session State persist after the browser is closed?",
+        "answer": "No, it's cleared when the session ends",
+        "options": [
+            "No, it's cleared when the session ends",
+            "Yes, it's stored in the browser's local storage",
+            "Yes, it's stored on the server",
+            "It depends on the Streamlit configuration"
+        ]
     },
     {
-        "question": "How do you create a sidebar in Streamlit?",
-        "options": ["st.sidebar", "st.create_sidebar()", "st.side_panel()", "st.add_sidebar()"],
-        "correct": "st.sidebar"
+        "question": "Can you use Session State with Streamlit's callback functions?",
+        "answer": "Yes",
+        "options": ["Yes", "No", "Only with button callbacks", "Only with form submissions"]
     },
     {
-        "question": "Which function displays a success message?",
-        "options": ["st.success()", "st.message_success()", "st.display_success()", "st.show_success()"],
-        "correct": "st.success()"
-    },
-    {
-        "question": "How do you get text input from a user in Streamlit?",
-        "options": ["st.input()", "st.get_text()", "st.text_input()", "st.user_input()"],
-        "correct": "st.text_input()"
-    },
-    {
-        "question": "Which function is used to display code in Streamlit?",
-        "options": ["st.display_code()", "st.show_code()", "st.code()", "st.syntax()"],
-        "correct": "st.code()"
-    },
-    {
-        "question": "How do you create columns in Streamlit?",
-        "options": ["st.columns()", "st.create_columns()", "st.divide()", "st.split()"],
-        "correct": "st.columns()"
-    },
-    {
-        "question": "Which function is used to display a warning message?",
-        "options": ["st.alert()", "st.caution()", "st.warning()", "st.notify()"],
-        "correct": "st.warning()"
-    },
-    {
-        "question": "How do you add a checkbox in Streamlit?",
-        "options": ["st.checkbox()", "st.tick()", "st.boolean()", "st.toggle()"],
-        "correct": "st.checkbox()"
+        "question": "What's a common use case for Session State in Streamlit apps?",
+        "answer": "Maintaining user input across app reruns",
+        "options": [
+            "Maintaining user input across app reruns",
+            "Storing large datasets",
+            "Managing database connections",
+            "Caching API responses"
+        ]
     }
 ]
 
-st.markdown('<p class="big-font">Streamlit Quiz 🧠</p>', unsafe_allow_html=True)
 
-# Initialize session state for score
-if 'score' not in st.session_state:
-    st.session_state.score = 0
+def main():
+    st.title("Streamlit Session State Quiz")
 
-# Display questions
-for i, question in enumerate(questions):
-    st.markdown(f'<p class="question-font">Question {i+1}: {question["question"]}</p>', unsafe_allow_html=True)
-    answer = st.radio(f"Choose your answer for question {i+1}:", question["options"], key=f"q{i}")
-    
-    # Use columns to create space between questions
-    col1, col2, col3 = st.columns([1,1,1])
-    with col2:
-        if st.button(f"Submit Answer for Question {i+1}", key=f"submit{i}"):
-            if answer == question["correct"]:
-                st.success("Correct! 🎉")
+    if 'current_question' not in st.session_state:
+        st.session_state.current_question = 0
+        st.session_state.score = 0
+        st.session_state.quiz_finished = False
+        random.shuffle(quiz_data)
+
+    if not st.session_state.quiz_finished:
+        question = quiz_data[st.session_state.current_question]
+        st.write(f"Question {st.session_state.current_question + 1} of {len(quiz_data)}")
+        st.write(question["question"])
+
+        user_answer = st.radio("Choose your answer:", question["options"], key=f"q_{st.session_state.current_question}")
+
+        if st.button("Submit Answer"):
+            if user_answer == question["answer"]:
+                st.success("Correct!")
                 st.session_state.score += 1
-                st.balloons()
             else:
-                st.error("Oops! That's not right. The correct answer is: " + question["correct"])
-    
-    st.markdown("---")  # Add a separator between questions
+                st.error(f"Wrong. The correct answer is: {question['answer']}")
 
-# Display final score
-st.markdown(f'<p class="big-font">Your Final Score: {st.session_state.score}/15</p>', unsafe_allow_html=True)
+            st.session_state.current_question += 1
 
-# Reset button
-if st.button("Reset Quiz"):
-    st.session_state.score = 0
-    st.experimental_rerun()
+            if st.session_state.current_question >= len(quiz_data):
+                st.session_state.quiz_finished = True
+            else:
+                st.experimental_rerun()
 
-# Sidebar content
-st.sidebar.markdown('<p class="question-font">Streamlit Fun Facts</p>', unsafe_allow_html=True)
-fun_facts = [
-    "Streamlit was first released in October 2019!",
-    "Streamlit is completely free and open-source!",
-    "You can deploy Streamlit apps for free using Streamlit Cloud!",
-    "Streamlit was created by machine learning experts!",
-    "Streamlit automatically updates your app when you save changes to your code!"
-]
-st.sidebar.info(random.choice(fun_facts))
+    if st.session_state.quiz_finished:
+        st.write(f"Quiz finished! Your score: {st.session_state.score}/{len(quiz_data)}")
+        if st.button("Restart Quiz"):
+            for key in list(st.session_state.keys()):
+                del st.session_state[key]
+            st.experimental_rerun()
+
+
+if __name__ == "__main__":
+    main()
