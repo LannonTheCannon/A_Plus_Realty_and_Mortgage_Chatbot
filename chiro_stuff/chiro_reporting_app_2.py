@@ -5,6 +5,8 @@ from datetime import datetime, timedelta
 import random
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
+import json
+from datetime import date, time
 
 # Set page config
 st.set_page_config(page_title="Body RES Patient Tracker", page_icon="🦴", layout="wide")
@@ -80,6 +82,54 @@ def main():
     elif selection == "Patient Summary":
         patient_summary()
 
+def save_patient_info(patient_name, patient_id, dob, gender,
+                      contact_number, email, visit_date, visit_time,
+                      occupation, height, weight,
+                      emergency_name, emergency_relation, emergency_number,
+                      medical_history, current_medications, allergies,
+                      exercise_frequency, exercise_types, sleep_hours, stress_level,
+                      previous_chiro,
+                      primary_complaint, pain_onset, pain_cause,
+                      pain_frequency, pain_intensity, pain_quality,
+                      consent, privacy_agreement):
+    
+        patient_data = {
+            "patient_name": patient_name,
+            "patient_id": patient_id,
+            "dob": dob.isoformat() if isinstance(dob, date) else dob,
+            "gender": gender,
+            "contact_number": contact_number,
+            "email": email,
+            "visit_date": visit_date.isoformat() if isinstance(visit_date, date) else visit_date,
+            "visit_time": visit_time.isoformat() if isinstance(visit_time, time) else visit_time,
+            "occupation": occupation,
+            "height": height,
+            "weight": weight,
+            "emergency_name": emergency_name,
+            "emergency_relation": emergency_relation,
+            "emergency_number": emergency_number,
+            "medical_history": medical_history,
+            "current_medications": current_medications,
+            "allergies": allergies,
+            "exercise_frequency": exercise_frequency,
+            "exercise_types": exercise_types,
+            "sleep_hours": sleep_hours,
+            "stress_level": stress_level,
+            "previous_chiro": previous_chiro,
+            "primary_complaint": primary_complaint,
+            "pain_onset": pain_onset.isoformat() if isinstance(pain_onset, date) else pain_onset, 
+            "pain_cause": pain_cause,
+            "pain_frequency": pain_frequency,
+            "pain_intensity": pain_intensity,
+            "pain_quality": pain_quality,
+            "consent": consent,
+            "privacy_agreement": privacy_agreement
+        }
+
+        with open(f"patient_info_{patient_id}.json", "w") as f:
+            json.dump(patient_data, f)
+    
+
 
 def patient_info():
     st.title("Patient Information")
@@ -139,9 +189,20 @@ def patient_info():
 
     if st.button("Save Patient Information"):
         if consent and privacy_agreement:
+            save_patient_info(patient_name, patient_id, dob, gender, # First Time Patient Inforation 
+                              contact_number, email, visit_date, visit_time,
+                              occupation, height, weight,
+                              emergency_name, emergency_relation, emergency_number, # Emergency contact information
+                              medical_history, current_medications, allergies, # Medical History
+                              exercise_frequency, exercise_types, sleep_hours, stress_level, # Lifestyle Factors
+                              previous_chiro, # Previous Chiropractic Care
+                              primary_complaint, pain_onset, pain_cause, # Current Complaint
+                              pain_frequency, pain_intensity, pain_quality, # Pain Characteristics
+                              consent, privacy_agreement) # Consent and Agreements
             st.success("Patient information saved successfully!")
+            
         else:
-            st.error("Please provide consent and agree to the privacy policy before saving.")
+            st.error("Please provide consent and agree to the privacy policy before saving.")   
 
 
 def soap_notes():
