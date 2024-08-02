@@ -53,11 +53,35 @@ def patient_info_page():
     primary_complaint = st.text_area("Primary reason for visit")
     pain_onset = st.date_input("When did the pain/discomfort start?")
     pain_cause = st.text_input("What caused the pain/discomfort? (if known)")
+    
+    # Pain Characteristics and Frequency 
 
     st.subheader("Pain Characteristics")
-    pain_frequency = st.selectbox("Pain Frequency", ["Constant", "Intermittent", "Occasional"])
-    pain_intensity = st.slider("Pain Intensity (0-10)", 0, 10, 5)
-    pain_quality = st.multiselect("Pain Quality", ["Sharp", "Dull", "Aching", "Burning", "Tingling", "Numbness"])
+
+    st.markdown("""
+    <style>
+        .stSelectbox {
+            margin-bottom: 20px;
+        }
+    </style>
+    """, unsafe_allow_html=True)
+
+    col1, col2 = st.columns(2)
+    with col1:
+        pain_intensity_sharp = st.slider("Sharp Pain Intensity (0-10)", 0, 10, 1, key='slider_sharpness')
+        pain_intensity_shooting = st.slider("Shooting Pain Intensity (0-10)", 0, 10, 1, key='slider_shooting')
+        pain_intensity_aching = st.slider("Aching Pain Intensity (0-10)", 0, 10, 1, key='slider_aching')
+        pain_intensity_burning = st.slider("Burning Pain Intensity (0-10)", 0, 10, 1, key='slider_burning')
+        pain_intensity_tingling = st.slider("Tingling Pain Intensity (0-10)", 0, 10, 1, key='slider_tingling')
+        pain_intensity_numbness = st.slider("Numbness Pain Intensity (0-10)", 0, 10, 1, key='slider_numbness')
+
+    with col2:
+        pain_freq_sharp = st.selectbox("Sharpness Frequency", ['Constant', 'Intermittent', 'Occasional'], key='select_sharp')
+        pain_freq_shooting = st.selectbox("Sharpness Frequency", ['Constant', 'Intermittent', 'Occasional'], key='select_shooting')
+        pain_freq_aching = st.selectbox("Sharpness Frequency", ['Constant', 'Intermittent', 'Occasional'], key='select_aching')
+        pain_freq_burning = st.selectbox("Sharpness Frequency", ['Constant', 'Intermittent', 'Occasional'], key='select_burning')
+        pain_freq_tingling = st.selectbox("Sharpness Frequency", ['Constant', 'Intermittent', 'Occasional'], key='select_tingling')
+        pain_freq_numbness = st.selectbox("Sharpness Frequency", ['Constant', 'Intermittent', 'Occasional'], key='select_numbness')
 
     st.subheader("Consent and Agreements")
     consent = st.checkbox("I consent to chiropractic examination and treatment")
@@ -73,7 +97,10 @@ def patient_info_page():
                               exercise_frequency, exercise_types, sleep_hours, stress_level, # Lifestyle Factors
                               previous_chiro, # Previous Chiropractic Care
                               primary_complaint, pain_onset, pain_cause, # Current Complaint
-                              pain_frequency, pain_intensity, pain_quality, # Pain Characteristics
+                              pain_intensity_sharp, pain_intensity_shooting, pain_intensity_aching, # Pain Characteristics
+                              pain_intensity_burning, pain_intensity_tingling, pain_intensity_numbness,
+                              pain_freq_sharp, pain_freq_shooting, pain_freq_aching,
+                              pain_freq_burning, pain_freq_tingling, pain_freq_numbness,
                               consent, privacy_agreement) # Consent and Agreements
             st.success("Patient information saved successfully!")
             

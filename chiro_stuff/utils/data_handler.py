@@ -14,7 +14,10 @@ def save_patient_info(patient_name, patient_id, dob, gender,
                       exercise_frequency, exercise_types, sleep_hours, stress_level,
                       previous_chiro,
                       primary_complaint, pain_onset, pain_cause,
-                      pain_frequency, pain_intensity, pain_quality,
+                      pain_intensity_sharp, pain_intensity_shooting, pain_intensity_aching,
+                      pain_intensity_burning, pain_intensity_tingling, pain_intensity_numbness,
+                      pain_freq_sharp, pain_freq_shooting, pain_freq_aching,
+                      pain_freq_burning, pain_freq_tingling, pain_freq_numbness,
                       consent, privacy_agreement):
     
     patient_data = {
@@ -44,9 +47,14 @@ def save_patient_info(patient_name, patient_id, dob, gender,
         "primary_complaint": primary_complaint,
         "pain_onset": pain_onset.isoformat() if isinstance(pain_onset, date) else pain_onset, 
         "pain_cause": pain_cause,
-        "pain_frequency": pain_frequency,
-        "pain_intensity": pain_intensity,
-        "pain_quality": pain_quality,
+        "pain_characteristics": {
+            "sharp": {"intensity": pain_intensity_sharp, "frequency": pain_freq_sharp},
+            "shooting": {"intensity": pain_intensity_shooting, "frequency": pain_freq_shooting},
+            "aching": {"intensity": pain_intensity_aching, "frequency": pain_freq_aching},
+            "burning": {"intensity": pain_intensity_burning, "frequency": pain_freq_burning},
+            "tingling": {"intensity": pain_intensity_tingling, "frequency": pain_freq_tingling},
+            "numbness": {"intensity": pain_intensity_numbness, "frequency": pain_freq_numbness}
+            },
         "consent": consent,
         "privacy_agreement": privacy_agreement
     }

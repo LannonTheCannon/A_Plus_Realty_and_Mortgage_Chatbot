@@ -42,7 +42,8 @@ import streamlit as st
 import plotly.graph_objects as go
 import plotly.express as px
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
+import random 
 
 # progress_tracker.py
 # This script will handle all the functions related to progression visualizations for the selected
@@ -90,13 +91,74 @@ import json
 from datetime import datetime
 
 def load_patient_data():
-    with open('./data/patient_info_23456.json', 'r') as f:
+    with open('./data/patient_info_123.json', 'r') as f:
         patient_info = json.load(f)
     with open('./data/soap_notes__240731.json', 'r') as f:
         soap_notes = json.load(f)
     with open('./data/treatment_plan_awdawd_20240717.json', 'r') as f:
         treatment_plan = json.load(f)
     return patient_info, soap_notes, treatment_plan
+
+def generate_dummy_heatmap_data(num_visits=30):
+    pain_types = ["Sharp", "Shooting", "Aching", "Burning", "Tingling", "Numbness"]
+    start_date = datetime(2024, 1, 1)
+    
+    all_visits_data = []
+
+    for visit in range(num_visits):
+        visit_date = (start_date + timedelta(days=visit*7)).strftime("%Y-%m-%d")
+        
+        heatmap_data = [
+            {
+                "id": pain_type,
+                "data": [
+                    {
+                        "x": visit_date,
+                        "y": max(1, min(10, random.gauss(5, 2) - visit * 0.1))  # Gradually decreasing trend
+                    }
+                ]
+            }
+            for pain_type in pain_types
+        ]
+        
+        all_visits_data.extend(heatmap_data)
+
+    return all_visits_data
+
+def generate_progressive_pain_data(num_visits=30):
+    pain_types = ["Sharp", "Shooting", "Aching", "Burning", "Tingling", "Numbness"]
+    start_date = datetime(2024, 1, 1)
+    
+    all_data = []
+
+    for visit in range(num_visits):
+        visit_date = (start_date + timedelta(days=visit*7)).strftime("%Y-%m-%d")
+        
+        # Simulate decreasing burning and tingling
+        burning = max(1, min(10, 8 - visit * 0.2 + random.uniform(-0.5, 0.5)))
+        tingling = max(1, min(10, 9 - visit * 0.25 + random.uniform(-0.5, 0.5)))
+        
+        # Simulate increasing aching
+        aching = min(10, max(1, 3 + visit * 0.15 + random.uniform(-0.5, 0.5)))
+        
+        # Other pain types with some random fluctuation
+        sharp = max(1, min(10, 5 + random.uniform(-1, 1)))
+        shooting = max(1, min(10, 4 + random.uniform(-1, 1)))
+        numbness = max(1, min(10, 3 + random.uniform(-1, 1)))
+
+        visit_data = [
+            {"id": "Sharp", "data": [{"x": visit_date, "y": sharp}]},
+            {"id": "Shooting", "data": [{"x": visit_date, "y": shooting}]},
+            {"id": "Aching", "data": [{"x": visit_date, "y": aching}]},
+            {"id": "Burning", "data": [{"x": visit_date, "y": burning}]},
+            {"id": "Tingling", "data": [{"x": visit_date, "y": tingling}]},
+            {"id": "Numbness", "data": [{"x": visit_date, "y": numbness}]}
+        ]
+        
+        all_data.extend(visit_data)
+
+    return all_data
+
 
 def progress_tracker_page():
     st.title("Patient Dashboard")
@@ -112,34 +174,146 @@ def progress_tracker_page():
             dashboard.Item("soap_notes", 4, 5, 4, 2)
         ]
 
-        with dashboard.Grid(layout):
+        with dashboard.Grid(layout=layout,
+                            #preventCollision=True,
+                            #compactType=None,
+                            numRows=50,
+                            rowHeight=15,
+                            useCSSTransforms=True,
+                            #transformScale=1.0,
+                            isDroppable=True,
+                            #draggableHandle='.draggable-handle',
+                            #isDraggable=True,
+                            #isResizeable=True, # onLayoutChange=self.on_layout_change
+                            ):
             with mui.Paper(key="patient_overview", sx={"p": 2}):
                 mui.Typography(f"Patient: {patient_info['patient_name']}", variant="h6")
                 mui.Typography(f"ID: {patient_info['patient_id']}")
                 mui.Typography(f"DOB: {patient_info['dob']}")
                 mui.Typography(f"Occupation: {patient_info['occupation']}")
+                
+            #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+            # First time patient Pain Metrics
+            #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-            with mui.Paper(key="pain_metrics", sx={"p": 2}):
-                mui.Typography("Pain and Discomfort", variant="h6")
-                with mui.Box(sx={"height": 200}):
+            pain_data = patient_info['pain_characteristics']
+
+            radar_data = [
+                {
+                    'taste': pain_type,
+                    'intensity': characteristics['intensity'],
+                    'frequency': {'Constant': 10, 'Intermittent': 5, 'Occasional': 2}[characteristics['frequency']],
+                }
+                for pain_type, characteristics in pain_data.items()
+            ]
+
+            st.title('Pain Characteristics Visualization')
+
+            with mui.Paper(key="pain_metrics_radar", sx={"p": 2}):
+                mui.Typography("Pain Intensity and Frequency", variant="h6")
+                with mui.Box(sx={"height": 400}):
                     nivo.Radar(
-                        data=[{
-                            "metric": location,
-                            "value": soap_notes['pain_level']
-                        } for location in soap_notes['pain_location']],
-                        keys=["value"],
-                        indexBy="metric",
-                        valueFormat=">-.2f",
-                        margin={"top": 70, "right": 80, "bottom": 40, "left": 80},
-                        borderColor={"from": "color"},
-                        gridLabelOffset=36,
-                        dotSize=10,
-                        dotColor={"theme": "background"},
-                        dotBorderWidth=2,
-                        colors={"scheme": "nivo"},
-                        blendMode="multiply",
-                        motionConfig="wobbly"
-                    )
+                    data=radar_data,
+                    keys=["intensity", "frequency"],
+                    indexBy="taste",
+                    #valueFormat=">-.2f",
+                    margin={"top": 40, "right": 10, "bottom": 30, "left": 0},
+                    borderColor={"from": "color"},
+                    #gridLabelOffset=36,
+                    dotSize=10,
+                    dotColor={"theme": "background"},
+                    dotBorderWidth=2,
+                    motionConfig="wobbly",
+                    legends=[
+                        {
+                            "anchor": "top-left",
+                            "direction": "column",
+                            "translateX": 50,
+                            "translateY": -40,
+                            "itemWidth": 80,
+                            "itemHeight": 20,
+                            "itemTextColor": "#999",
+                            "symbolSize": 12,
+                            "symbolShape": "circle",
+                            "effects": [
+                                {
+                                    "on": "hover",
+                                    "style": {
+                                        "itemTextColor": "#000"
+                                    }
+                                }
+                            ]
+                        }
+                    ],
+                )
+
+            #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+            # First time patient Pain Metrics (Heat Map)
+            #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+            # Heatmap (best used over a longer period of time)
+            # Generate dummy data for 30 visits
+            dummy_heatmap_data = generate_dummy_heatmap_data(30)
+            progress_heatmap_data = generate_progressive_pain_data(20)
+            
+##    heatmap_data = [
+##        {
+##            "id": pain_type,
+##            "data": [
+##                {
+##                    "x": "Intensity",
+##                    "y": characteristics['intensity']
+##                }
+##            ]
+##        }
+##        for pain_type, characteristics in pain_data.items()
+##    ]
+
+##            with mui.Paper(key="pain_metrics_heat", sx={"p": 2}):
+##                mui.Typography("Pain Intensity and Frequency", variant="h6")
+##                nivo.HeatMap(
+##                    data=heatmap_data,
+##                    margin={"top": 60, "right": 90, "bottom": 60, "left": 90},
+##                    valueFormat=">-.2f",
+##                    axisTop={"tickSize": 5, "tickPadding": 5, "tickRotation": -90, "legend": "", "legendOffset": 46},
+##                    axisRight={"tickSize": 5, "tickPadding": 5, "tickRotation": 0, "legend": "Pain Type", "legendPosition": "middle", "legendOffset": 70},
+##                    axisLeft={"tickSize": 5, "tickPadding": 5, "tickRotation": 0, "legend": "Measure", "legendPosition": "middle", "legendOffset": -72},
+##                    colors={
+##                        "type": "sequential",
+##                        "scheme": "reds"
+##                    },
+##                )
+
+            with mui.Paper(key='pain_metrics_heat', sx={'p': 2}):
+                mui.Typography("Pain Intensity and Frequency", variant='h6')
+                nivo.HeatMap(
+                    data=progress_heatmap_data,
+                    margin={"top": 60, "right": 90, "bottom": 60, "left": 90},
+                    valueFormat=">-.0f",
+                    axisTop={"tickSize": 5, "tickPadding": 5, "tickRotation": -45, "legend": "Visit Date", "legendOffset": 46},
+                    #axisRight={"tickSize": 5, "tickPadding": 5, "tickRotation": 0, "legend": "Pain Type", "legendPosition": "middle", "legendOffset": 70},
+                    #axisLeft={"tickSize": 5, "tickPadding": 5, "tickRotation": 0, "legend": "Pain Type", "legendPosition": "middle", "legendOffset": -72},
+                    colors={
+                        "type": "sequential",
+                        "scheme": "reds",
+                        "minValue": 1,
+                        "maxValue": 10
+                    },
+                    enableGridX=True,
+                    enableGridY=True,
+                    animate=True,
+                    #motionStiffness=120,
+                    #motionDamping=9,
+                    #hoverTarget="cell",
+                    #cellHoverOthersOpacity={0.25},
+                    opacity={
+                        "type": "linear",
+                        "min": 0.1,
+                        "max": 1
+                    }
+                )
+
+    #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
             with mui.Paper(key="range_of_motion", sx={"p": 2}):
                 mui.Typography("Range of Motion", variant="h6")
@@ -156,7 +330,7 @@ def progress_tracker_page():
                         keys=["flexion", "extension"],
                         indexBy="joint",
                         groupMode="grouped",
-                        margin={"top": 50, "right": 130, "bottom": 50, "left": 60},
+                        margin={"top": 0, "right": 130, "bottom": 0, "left": 60},
                         padding={0.3},
                         valueScale={"type": "linear"},
                         indexScale={"type": "band", "round": True},
