@@ -105,7 +105,6 @@ def treatment_plan_page():
     # Save and Generate Report
     if st.button("Save and Generate Treatment Plan"):
         if informed_consent:
-            st.success("Treatment plan saved successfully!")
             save_treatment_plan_info(patient_name, patient_id, diagnosis, #Patient Information
                                      plan_start_date, plan_duration, #Treatment Duration
                                      initial_phase, maintenance_phase, # Visit Frequency
@@ -122,6 +121,8 @@ def treatment_plan_page():
                                      reevaluation_frequency, # Re-evaluation Schedule
                                      informed_consent, # Informed Consent
                                      )
+            st.success("Treatment plan saved successfully!")
+
             # Here you would typically generate a PDF or structured output of the treatment plan
             st.download_button(
                 label="Download Treatment Plan",

@@ -38,13 +38,6 @@
 
 #=======================================================================================
 
-import streamlit as st
-import plotly.graph_objects as go
-import plotly.express as px
-import json
-from datetime import datetime, timedelta
-import random 
-
 # progress_tracker.py
 # This script will handle all the functions related to progression visualizations for the selected
 # patients.
@@ -84,11 +77,13 @@ import random
 # a network diagram showing the relationship between symptoms, treatments, and outcomes
 
 #=======================================================================================
-
 import streamlit as st
 from streamlit_elements import elements, dashboard, mui, nivo
+import plotly.graph_objects as go
+import plotly.express as px
+from datetime import datetime, timedelta
+import random 
 import json
-from datetime import datetime
 
 def load_patient_data():
     with open('./data/patient_info_123.json', 'r') as f:
