@@ -63,19 +63,12 @@ def fetch_response(user_input):
         if active_run_id:
             # Wait for the active run to complete
             wait_for_run_complete(THREAD_ID, active_run_id)
-
-        # Add a system message for concise responses
-        client.beta.threads.messages.create(
-            thread_id=THREAD_ID,
-            role='system',
-            content="Please provide very brief responses, no more than 2-3 sentences or 50 words."
-        )
         
         # Create a message in the thread
         client.beta.threads.messages.create(
             thread_id=THREAD_ID,
             role='user',
-            content=user_input
+            content=f'Please provide very brief responses, no more than 2-3 sentences or 50 words. {user_input}'
         )
 
         # Create a run with the assistant
