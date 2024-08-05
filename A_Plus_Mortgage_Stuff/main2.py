@@ -2,29 +2,28 @@ import streamlit as st
 import openai
 from dotenv import load_dotenv
 import os
+import logging
+import time
 
-# Load environmental variable 
+# Load environment variables
 load_dotenv()
 
-# Set up OpenAI Client
-openai.api_key = os.getenv('OPENAI_API_KEY')
-client = openai.OpenAI()
+# Set up OpenAI client
+api_key = os.getenv('OPENAI_API_KEY')
+if not api_key:
+    st.error("OpenAI API key not found. Please check your .env file.")
+    st.stop()
+
+client = openai.OpenAI(api_key=api_key)
 
 # Set up Logging
 logging.basicConfig(level=logging.INFO)
 
 # Constants
-assistant_id = 'asst_kGpo0qVcgHp4R5kItDuUNMZB'
-thread_id = 'thread_EiCMg9fI3uwF4cWUgWmM82ra'
+ASSISTANT_ID = 'asst_kGpo0qVcgHp4R5kItDuUNMZB'
+THREAD_ID = 'thread_EiCMg9fI3uwF4cWUgWmM82ra'
 
-def wait_for_run_complete(client, thread_id, run_id):
-    """
-    Waits for a run to complete and prints the elapsed time.
-    :param client:
-    :param thread_id: The ID of the thread.
-    :param run_id: The ID of the run.
-    :param sleep_interval: Time in seconds to wait between checks.
-    """
+def wait_for_run_complete(thread_id, run_id):
     while True:
         try:
             run = client.beta.threads.runs.retrieve(thread_id=thread_id, run_id=run_id)
@@ -32,33 +31,31 @@ def wait_for_run_complete(client, thread_id, run_id):
                 elapsed = run.completed_at - run.created_at
                 formatted_elapsed_time = time.strftime('%H:%M:%S', time.gmtime(elapsed))
                 logging.info(f'Run completed in {formatted_elapsed_time}')
-                message = client.beta.threads.messages.list(thread_id)
-                last_message = message.data[0]
+                messages = client.beta.threads.messages.list(thread_id=thread_id)
+                last_message = messages.data[0]
                 return last_message.content[0].text.value
         except Exception as e:
-            logging.error(f'An error occured while retrieving the run: {e}')
+            logging.error(f'An error occurred while retrieving the run: {e}')
             return "Sorry, I encountered an error. Please try again."
         time.sleep(1)
 
-def fetch_response(self, user_input):
+def fetch_response(user_input):
     try:
         # Create a message in the thread
-        message = client.beta.threads.messages.create(
-            thread_id=thread_id,
+        client.beta.threads.messages.create(
+            thread_id=THREAD_ID,
             role='user',
-            content=user_input['target']['value'],
+            content=user_input
         )
-
         # Create a run with the assistant
         run = client.beta.threads.runs.create(
-            thread_id=thread_id,
-            assistant_id=assistant_id,
+            thread_id=THREAD_ID,
+            assistant_id=ASSISTANT_ID
         )
-
-        response = wait_for_run_complete(client=client, thread_id=thread_id, run_id=run.id)
-        return response
+        return wait_for_run_complete(THREAD_ID, run.id)
     except Exception as e:
-        print(f'Error: {e}')
+        logging.error(f'Error: {e}')
+        return "Sorry, I encountered an error. Please try again."
 
 # Streamlit UI
 st.title("A+ Realty & Mortgage Chatbot")
