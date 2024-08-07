@@ -54,7 +54,7 @@ def agenda():
            - Approach for robot integration
            - Data update mechanisms for frequent listing changes
         5. **Implementation Timeline (5 minutes)**
-           - 6-month timeline overview
+           - 5-month timeline overview
            - Breakdown of 4 project phases
         6. **Costs and ROI (10 minutes)**
            - Total project cost: $26,000
@@ -69,11 +69,11 @@ def agenda():
            - Competitive edge in the real estate market
            - Scalability for growing inventory
         8. **Case Study or Success Story (3 minutes)**
-           - Brief example of a similar implementation (if available)
+           - Brief example of a similar implementation
         9. **Next Steps and Commitment (7 minutes)**
            - Proposal for immediate project initiation
            - Discussion of first phase deliverables
-           - Request for $26,000 commitment over 6 months
+           - Request for $26,000 commitment over 5 months
         10. **Q&A Session (10 minutes)**
             - Address any concerns or questions
         11. **Closing Remarks (5 minutes)**
