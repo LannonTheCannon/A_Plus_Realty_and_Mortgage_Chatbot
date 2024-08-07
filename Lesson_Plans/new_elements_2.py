@@ -7,6 +7,7 @@ import time
 import plotly.express as px
 import base64
 import os
+import matplotlib.pyplot as plt
 
 # Set page config
 st.set_page_config(layout="wide", page_title="Streamlit Scavenger Hunt", page_icon="🔍")
@@ -29,9 +30,6 @@ st.markdown("""
         color: #ffffff;
         background-color: #ff4b4b;
         border: none;
-    }
-    .stTextInput>div>div>input {
-        color: black;
     }
     [data-testid="stSidebar"] {
         margin-top: 45px;
@@ -79,6 +77,41 @@ elements = [
     ("st.info", "Displays an informational message", lambda: st.info("This is an informational message")),
     ("st.success", "Displays a success message", lambda: st.success("This is a success message")),
     ("st.altair_chart (scatter)", "Displays an interactive Altair scatter plot", lambda: st.altair_chart(alt.Chart(pd.DataFrame(np.random.randn(50, 2), columns=['x', 'y'])).mark_circle().encode(x='x', y='y'))),
+    ("st.button", "Creates a button", lambda: st.button("Click me!")),
+    ("st.download_button", "Creates a download button", lambda: st.download_button("Download CSV", data="a,b,c\n1,2,3\n4,5,6", file_name="data.csv", mime="text/csv")),
+    ("st.checkbox", "Creates a checkbox", lambda: st.checkbox("Check me out")),
+    ("st.radio", "Creates a radio button group", lambda: st.radio("Choose one", ["Option 1", "Option 2", "Option 3"])),
+    ("st.selectbox", "Creates a select box", lambda: st.selectbox("Choose an option", ["Option A", "Option B", "Option C"])),
+    ("st.multiselect", "Creates a multiselect box", lambda: st.multiselect("Select multiple options", ["Red", "Green", "Blue"])),
+    ("st.slider", "Creates a slider", lambda: st.slider("Select a value", 0, 100, 50)),
+    ("st.select_slider", "Creates a slider with predefined options", lambda: st.select_slider("Select size", ["S", "M", "L", "XL"])),
+    ("st.text_input", "Creates a single-line text input", lambda: st.text_input("Enter your name")),
+    ("st.number_input", "Creates a numeric input", lambda: st.number_input("Enter a number", min_value=0, max_value=100, value=50)),
+    ("st.text_area", "Creates a multi-line text input", lambda: st.text_area("Enter a paragraph")),
+    ("st.date_input", "Creates a date input", lambda: st.date_input("Select a date")),
+    ("st.time_input", "Creates a time input", lambda: st.time_input("Select a time")),
+    ("st.file_uploader", "Creates a file uploader", lambda: st.file_uploader("Choose a file")),
+    ("st.camera_input", "Creates a camera input widget", lambda: st.camera_input("Take a picture")),
+    ("st.columns", "Creates a horizontal layout", lambda: st.columns(3)[1].write("This is in the middle column")),
+    ("st.tabs", "Creates a tabbed interface", lambda: st.tabs(["Tab 1", "Tab 2", "Tab 3"])[1].write("This is Tab 2")),
+    ("st.container", "Creates a container for elements", lambda: st.container().write("This is inside a container")),
+    ("st.empty", "Creates an empty placeholder", lambda: st.empty().write("This replaces the empty placeholder")),
+    ("st.form", "Creates a form for batch submission", lambda: st.form(key="my_form").form_submit_button("Submit")),
+    ("st.plotly_chart", "Displays a Plotly chart", lambda: st.plotly_chart(px.scatter(x=[1, 2, 3], y=[1, 3, 2]))),
+    ("st.pyplot", "Displays a Matplotlib figure", lambda: st.pyplot(plt.figure(figsize=(4,3))).add_subplot(111).plot([1, 2, 3])),
+    ("st.bokeh_chart", "Displays a Bokeh chart", lambda: st.bokeh_chart(figure(plot_width=300, plot_height=300).circle([1, 2, 3], [1, 2, 3], size=20))),
+    ("st.pydeck_chart", "Displays a PyDeck chart", lambda: st.pydeck_chart(pdk.Deck(initial_view_state=pdk.ViewState(latitude=37.76, longitude=-122.4, zoom=11)))),
+    ("st.graphviz_chart", "Displays a Graphviz graph", lambda: st.graphviz_chart('''
+        digraph {
+            A -> B
+            B -> C
+            C -> A
+        }
+    ''')),
+    ("st.balloons", "Displays a balloon animation", lambda: st.balloons()),
+    ("st.snow", "Displays a snow animation", lambda: st.snow()),
+    ("st.sidebar", "Adds elements to the sidebar", lambda: st.sidebar.write("This is in the sidebar")),
+    ("st.markdown", "Renders Markdown text", lambda: st.markdown("**Bold** and *italic* text")),
 ]
 
 def get_sidebar_style(sidebar_image_base64):
